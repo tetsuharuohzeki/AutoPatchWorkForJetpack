@@ -1,0 +1,25 @@
+{
+   "background_page": "background.html",
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "AutoPatchWork.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_end"
+   } ],
+   "default_locale": "en_US",
+   "description": "Automatically loads the next page and inserts into current page when you reach the end of the page. like AutoPagerize.",
+   "icons": {
+      "128": "Icon-128.png",
+      "16": "Icon-16.png",
+      "32": "Icon-32.png",
+      "48": "Icon-48.png",
+      "64": "Icon-64.png"
+   },
+   "id": "pgippdefedhbfjdpladgebmcoghhkhil",
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDzUqUL+uV1Dv/9+uLi68HJliumHnbOgkziVnD5hi080T8wnIUbVUecAFEIbL+mxOIhYeXw6ifDaODUd2i5gktc7MTptLw/2bAqJaI69egu7TzymavogpRI3rj+kfk4pQZ9ALfJT/JlMR/Vz8RysAnpXzSW4BjR95GZ4DsEkuxI2wIDAQAB",
+   "name": "AutoPatchWork",
+   "options_page": "options_page.html",
+   "permissions": [ "http://*/*", "tabs" ],
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "version": "1.7.2"
+}

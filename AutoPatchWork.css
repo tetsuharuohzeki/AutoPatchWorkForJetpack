@@ -1,0 +1,9 @@
+.autopagerize_page_separator_blocks .autopagerize_link:before{
+content:"page: " attr(number);
+}
+.autopagerize_page_separator_blocks .autopagerize_link:hover:before{
+content:"";
+}
+.autopagerize_page_separator_blocks .autopagerize_link:hover:after{
+content:attr(href);
+}
