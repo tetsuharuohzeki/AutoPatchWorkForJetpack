@@ -120,14 +120,19 @@
 </div>
 </div>
 <script>
+Object.keys || (Object.keys = function(k){
+	var r = [];
+	for (var i in k) r.push(i);
+	return r;
+});
 (function option_init(opt){
+var g = this;
 if(this.chrome){
   BackGround = chrome.extension.getBackgroundPage();
   AutoPatchWork = BackGround.AutoPatchWork;
 } else if (this.safari && !opt){
   safari.self.tab.dispatchMessage('option_init');
   safari.self.addEventListener('message',function(evt){
-    //option_init();
 	if(evt.name === 'option_init'){
 		option_init(evt.message);
 	} else if(evt.name === 'updated_siteinfo') {
@@ -135,7 +140,17 @@ if(this.chrome){
 	}
   },false);
   return;
-} else if (opt){
+} else if (this.opera && !opt){
+	opera.extension.onmessage = function(evt){
+		if(evt.data.name === 'option_init'){
+			option_init(evt.data.data);
+		} else if(evt.data.name === 'updated_siteinfo') {
+			BackGround.callback();
+		}
+	};
+	opera.extension.postMessage({name:'option_init'});
+	return;
+} else if (opt && g.safari){
 	AutoPatchWork = opt;
 	['save_css','add_disable_site','delete_disable_site'].forEach(function(action){
 		AutoPatchWork[action] = function(){
@@ -152,6 +167,23 @@ if(this.chrome){
 		BackGround.callback = callback;
 		safari.self.tab.dispatchMessage('invoke_action',{action:'UpdateSiteinfo'});
 	}};
+} else if (opt && g.opera){
+	AutoPatchWork = opt;
+	['save_css','add_disable_site','delete_disable_site'].forEach(function(action){
+		AutoPatchWork[action] = function(){
+			opera.extension.postMessage({name:'invoke_action',data:{action:action, args:Array.prototype.slice.call(arguments)}});
+		};
+	});
+	AutoPatchWork.update = function(){
+		opera.extension.postMessage({name:'invoke_action',data:{action:'update', config:AutoPatchWork.config}});
+	};
+	AutoPatchWork.save_disable_site = function(){
+		opera.extension.postMessage({name:'invoke_action',data:{action:'save_disable_site', disable_sites:AutoPatchWork.disable_sites}});
+	};
+	BackGround = {UpdateSiteinfo:function(callback){
+		BackGround.callback = callback;
+		opera.extension.postMessage({name:'invoke_action',data:{action:'UpdateSiteinfo'}});
+	}};
 }
 
 var WIDTH = 800;
@@ -162,7 +194,10 @@ var i18n = this.chrome ? chrome.i18n:
                            getAcceptLanguages:function(){},
                            getMessage:function(){}
                          }:
-                         {};
+                         {
+                           getAcceptLanguages:function(){},
+                           getMessage:function(){}
+                         };
 
 function L10N(){
 	i18n.getAcceptLanguages(function(langs){
@@ -255,14 +290,14 @@ function create_filter(site) {
 	types.addEventListener('change',function(){
 		site.type = types.value;
 		AutoPatchWork.save_disable_site();
-	});
+	},false);
 	var input = document.createElement('input');
 	input.type = 'text';
 	input.value = site.matcher;
 	input.addEventListener('input',function(){
 		site.matcher = input.value;
 		AutoPatchWork.save_disable_site();
-	});
+	},false);
 	li.appendChild(input);
 	var del = document.createElement('button');
 	del.textContent = i18n.getMessage('del') || 'Del';
@@ -275,7 +310,7 @@ function create_filter(site) {
 			AutoPatchWork.add_disable_site(site);
 			del.textContent = i18n.getMessage('del') || 'Del';
 		}
-	});
+	},false);
 	li.appendChild(del);
 	filter_list.appendChild(li);
 }
@@ -294,7 +329,7 @@ add_filter.addEventListener('click',function(){
 	create_filter(site);
 	AutoPatchWork.add_disable_site(site);
 	filter_text.value ='';
-});
+},false);
 
 
 var sections = $X('/html/body/div/div/section[contains(@class, "content")]');
@@ -319,7 +354,7 @@ btns.forEach(function(btn, i, btns){
 		sections[i].style.height = 'auto';
 		new Tween(inner_container.style, {marginLeft:{to:i * -WIDTH,tmpl:'$#px'},time:0.2,onComplete:function(){
 				document.title = default_title + btn.hash;
-				location.hash = btn.hash;
+				!window.opera && (location.hash = btn.hash);
 				window.scrollBy(0, -1000);
 				sections.forEach(function(section, _i){
 					if (i !== _i) {

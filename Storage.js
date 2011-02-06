@@ -25,7 +25,7 @@
 			return null;
 		},
 		has:function(key){
-			if (!localStorage.hasOwnProperty(key)) {
+			if (localStorage[key] === void 0) {
 				return false;
 			}
 			var data = Storage.get_data(key);

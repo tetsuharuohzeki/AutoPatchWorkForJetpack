@@ -4,7 +4,7 @@ var sendRequest = this.chrome ? function(data,callback){
 	} else {
 		chrome.extension.sendRequest(data);
 	}
-} : (function(){
+} : this.safari? (function(){
 	var eventData = {};
 	safari.self.addEventListener('message',function(evt){
 		(evt.name in eventData) && eventData[evt.name](evt.message);
@@ -14,9 +14,37 @@ var sendRequest = this.chrome ? function(data,callback){
 		callback && (eventData[name] = callback);
 		safari.self.tab.dispatchMessage(name,data);
 	}
-})();
-(function(g){
+})() : this.opera ? (function(data, callback){
+	Object.keys || (Object.keys = function(k){
+		var r = [];
+		for (i in k)r.push(i);
+		return r;
+	});
+	var eventData = {};
+	opera.extension.onmessage = function(evt){
+		(evt.data.name in eventData) && eventData[evt.data.name](evt.data.data);
+	};
+	return function(data, callback, name){
+		name = (name || '') + (Date.now() + Math.random().toString(36));
+		callback && (eventData[name] = callback);
+		opera.extension.postMessage({name:name,data:data});
+	};
+})() : null;
+var XPathResult = window.XPathResult;
+var XMLHttpRequest = window.XMLHttpRequest;
+var Node = window.Node;
+if (typeof location === 'undefined'){
+var location = window.location;
+}
+(function aa(g, O){
 	if(window.name === 'AutoPatchWork-request-frame') return;
+	if (g.opera && !O){
+		var self = aa
+		document.addEventListener('DOMContentLoaded',function(e){
+			self(g, 1);
+		},false);
+		return;
+	}
 	var options = {
 		BASE_REMAIN_HEIGHT:400,
 		FORCE_TARGET_WINDOW:true,
@@ -42,7 +70,7 @@ var sendRequest = this.chrome ? function(data,callback){
 		&& document.createElement('p').nodeName !== document.createElement('P').nodeName;
 	window.addEventListener('AutoPatchWork.siteinfo', siteinfo, false);
 	var bar;
-	sendRequest({url:location.href,isFrame:top!=self},init,'AutoPatchWork.init');
+	sendRequest({url:location.href,isFrame:window.top!=window.self},init,'AutoPatchWork.init');
 	function init(info){
 		if (info.config) {
 			options.BASE_REMAIN_HEIGHT = info.config.remain_height;
@@ -85,6 +113,7 @@ var sendRequest = this.chrome ? function(data,callback){
 		}
 
 		var loading = false;
+		var scroll = false;
 		var nextLink     = status.nextLink     = siteinfo.nextLink;
 		var pageElement = status.pageElement = siteinfo.pageElement;
 
@@ -97,6 +126,8 @@ var sendRequest = this.chrome ? function(data,callback){
 		}
 		if ('www.tumblr.com' === location.host) {
 			script_filter = none_filter;
+		} else if (/^http:\/\/www\.google\.(?:[^.]+\.)?[^.\/]+\/images\?./.test(location.href)) {
+			request = request_iframe;
 		} else if (location.host==='matome.naver.jp'){
 			var _get_next = get_next;
 			get_next = function(doc){
@@ -126,6 +157,7 @@ var sendRequest = this.chrome ? function(data,callback){
 		loaded_urls[next.href] = true;
 		status.remain_height || (status.remain_height = calc_remain_height());
 		window.addEventListener('scroll', check_scroll, false);
+		window.addEventListener('resize', check_scroll, false);
 		window.addEventListener('AutoPatchWork.request', request, false);
 		window.addEventListener('AutoPatchWork.load', load, false);
 		window.addEventListener('AutoPatchWork.append', append, false);
@@ -245,6 +277,7 @@ var sendRequest = this.chrome ? function(data,callback){
 			bar.className = 'terminated';
 			setTimeout(function(){
 				bar && bar.parentNode && bar.parentNode.removeChild(bar);
+				bar = null;
 			},1000);
 			if (status.bottom && status.bottom.parentNode) {
 				status.bottom.parentNode.removeChild(status.bottom);
@@ -284,6 +317,19 @@ var sendRequest = this.chrome ? function(data,callback){
 			}
 		}
 		function check_scroll(){
+			if (bar){
+				if (scroll) {
+					//bar.style.top = (window.pageYOffset + window.innerHeight - 13) + 'px';
+				} else {
+					scroll = true;
+					bar.style.display = 'none';
+					setTimeout(function(){
+						bar.style.top = (window.pageYOffset + window.innerHeight - 13) + 'px';
+						bar.style.display = 'block';
+						scroll = false;
+					}, 500);
+				}
+			}
 			if (loading) return;
 			var remain = Root.scrollHeight - window.innerHeight - window.pageYOffset;
 			if (status.state && remain < status.remain_height) {
