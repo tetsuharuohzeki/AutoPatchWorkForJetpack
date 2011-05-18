@@ -41,6 +41,9 @@ window.AutoPatchWork = {
 	save_css:function(css){
 		AutoPatchWork.css = localStorage.AutoPatchWorkCSS = css;
 	},
+	reset_css:function(){
+		init_css();
+	},
 	update:function(){
 		localStorage.AutoPatchWorkConfig = JSON.stringify(AutoPatchWork.config);
 	},
@@ -268,7 +271,7 @@ function handleMessage(request, sender, sendResponse){
 			infos.push(siteinfo[i]);
 		}
 	}
-	sendResponse({siteinfo:infos,config:AutoPatchWork.config,css:AutoPatchWork.css+AutoPatchWork.barcss});
+	sendResponse({siteinfo:infos,config:AutoPatchWork.config,css:AutoPatchWork.barcss+AutoPatchWork.css});
 }
 function openOrFocusTab(uri){
 	if(g.chrome) {

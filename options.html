@@ -53,9 +53,19 @@
 	<div class="MSG_separator_style">Page Separator Style</div>
 	<textarea id="css_text"></textarea>
 	<div><button id="apply_css" class="MSG_save">Save</button></div>
+	<div><button id="reset_css" class="MSG_reset">Reset</button></div>
 </section>
 <section id="news" class="content">
 	<ul>
+	<li>
+		<h4>2011/05/15 19:21</h4>
+		<p>Googleのインスタント検索対応。
+		<p>(2011/05/15 23：37 追記) 追加でページナンバーのズレ修正、挿入位置のズレ修正。インスタント検索対応のアドバイス、バグ報告を頂いた<a href="https://twitter.com/mono0x">@mono0x</a>さんに感謝！
+	</li>
+	<li>
+		<h4>2011/04/03 15:51</h4>
+		<p>Safariユーザー向け：環境によって(トラックパッドで2本指スクロールしたときに)継ぎ足し時にスクロール位置がずれる問題を修正してみたつもりです。オプション周りの問題も後で修正します。
+	</li>
 	<li>
 		<h4>2011/02/09 23:20</h4>
 		<p>ページ下部のステータスバーの表示オプションを追加しました。スクロールが重く感じる場合、OFFにすると改善されるかもしれません。
@@ -117,7 +127,7 @@
 <section id="about" class="content">
 	<dl>
 		<dt>Name:<dt>
-		<dd><a href="https://chrome.google.com/extensions/detail/aeolcjbaammbkgaiagooljfdepnjmkfd" target="_blank">AutoPatchWork</a></dd>
+		<dd><a href="http://code.google.com/p/autopatchwork/" target="_blank">AutoPatchWork</a></dd>
 		<dt>Author:<dt>
 		<dd><a href="http://ss-o.net/" target="_blank">os0x</a></dd>
 		<dt>Thanks:<dt>
@@ -161,7 +171,7 @@ if(this.chrome){
 	return;
 } else if (opt && g.safari){
 	AutoPatchWork = opt;
-	['save_css','add_disable_site','delete_disable_site'].forEach(function(action){
+	['save_css','reset_css','add_disable_site','delete_disable_site'].forEach(function(action){
 		AutoPatchWork[action] = function(){
 			safari.self.tab.dispatchMessage('invoke_action',{action:action, args:Array.prototype.slice.call(arguments)});
 		};
@@ -178,7 +188,7 @@ if(this.chrome){
 	}};
 } else if (opt && g.opera){
 	AutoPatchWork = opt;
-	['save_css','add_disable_site','delete_disable_site'].forEach(function(action){
+	['save_css','reset_css','add_disable_site','delete_disable_site'].forEach(function(action){
 		AutoPatchWork[action] = function(){
 			opera.extension.postMessage({name:'invoke_action',data:{action:action, args:Array.prototype.slice.call(arguments)}});
 		};
@@ -230,8 +240,10 @@ open_siteinfo_manager.addEventListener('click',function(e){
 		window.chrome.tabs.getCurrent(function(tab){
 			chrome.tabs.update(tab.id,{url:"siteinfo_manager.html"});
 		});
-	} else {
+	} else if(window.safari){
 		safari.self.tab.dispatchMessage('options', {manage:true});
+	} else if(window.opera){
+		opera.extension.postMessage({name:'options', data:{manage:true}});
 	}
 },false);
 
@@ -296,6 +308,14 @@ css_text.value = AutoPatchWork.css;
 var apply_css = document.getElementById('apply_css');
 apply_css.addEventListener('click',function(){
 	AutoPatchWork.save_css(css_text.value);
+},false);
+
+var reset_css = document.getElementById('reset_css');
+reset_css.addEventListener('click',function(){
+	AutoPatchWork.reset_css();
+	setTimeout(function(){
+		css_text.value = AutoPatchWork.css = localStorage.AutoPatchWorkCSS;
+	},0);
 },false);
 
 var filter_list = document.getElementById('filter_list');
