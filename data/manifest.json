@@ -1,8 +1,8 @@
 {
-   "background_page": "background.html",
+   "background_page": "index.html",
    "content_scripts": [ {
       "all_frames": true,
-      "js": [ "AutoPatchWork.js" ],
+      "js": [ "includes/AutoPatchWork.js" ],
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_end"
    } ],
@@ -18,8 +18,8 @@
    "id": "pgippdefedhbfjdpladgebmcoghhkhil",
    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDzUqUL+uV1Dv/9+uLi68HJliumHnbOgkziVnD5hi080T8wnIUbVUecAFEIbL+mxOIhYeXw6ifDaODUd2i5gktc7MTptLw/2bAqJaI69egu7TzymavogpRI3rj+kfk4pQZ9ALfJT/JlMR/Vz8RysAnpXzSW4BjR95GZ4DsEkuxI2wIDAQAB",
    "name": "AutoPatchWork",
-   "options_page": "options_page.html",
+   "options_page": "options.html",
    "permissions": [ "http://*/*", "tabs" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "1.7.2"
+   "version": "1.8.0"
 }

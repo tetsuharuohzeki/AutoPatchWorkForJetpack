@@ -7,14 +7,14 @@
      <dict>
        <key>CFBundleIdentifier</key>
        <string>net.os0x.autopatchwork</string>
-       <key>Team Identifier</key
-       <string>YourCertifcateID</string>
+       <key>Developer Identifier</key>
+       <string>LAM47A73AC</string>
        <key>CFBundleVersion</key>
-       <string>Your current bundle version</string>
+       <string>1.8.0</string>
        <key>CFBundleShortVersionString</key>
-       <string>Your current display version</string>
+       <string>1.8.0</string>
        <key>URL</key>
-       <string>Your-.safariextz-URL</string>
+       <string>http://ss-o.net/safari/extension/AutoPatchWork.safariextz</string>
      </dict>
    </array>
 </dict>

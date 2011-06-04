@@ -11,13 +11,13 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.6</string>
+	<string>1.8.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.6</string>
+	<string>1.8.0</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
-		<string>background.html</string>
+		<string>index.html</string>
 	</dict>
 	<key>Content</key>
 	<dict>
@@ -25,7 +25,7 @@
 		<dict>
 			<key>End</key>
 			<array>
-				<string>AutoPatchWork.js</string>
+				<string>includes/AutoPatchWork.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
