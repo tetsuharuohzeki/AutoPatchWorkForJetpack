@@ -1,35 +1,13 @@
-var sendRequest = this.chrome ? function(data,callback){
-	if (callback) {
-		chrome.extension.sendRequest(data,callback);
-	} else {
-		chrome.extension.sendRequest(data);
-	}
-} : this.safari? (function(){
+var sendRequest = (function(){
 	var eventData = {};
-	safari.self.addEventListener('message',function(evt){
-		(evt.name in eventData) && eventData[evt.name](evt.message);
-	},false);
-	return function(data, callback, name){
-		name = (name || '') + (Date.now() + Math.random().toString(36));
-		callback && (eventData[name] = callback);
-		safari.self.tab.dispatchMessage(name,data);
-	}
-})() : this.opera ? (function(data, callback){
-	Object.keys || (Object.keys = function(k){
-		var r = [];
-		for (i in k)r.push(i);
-		return r;
+	self.on("message", function (aRes) {
+		if (aRes.name in eventData) eventData[aRes.name](aRes.data);
 	});
-	var eventData = {};
-	opera.extension.onmessage = function(evt){
-		(evt.data.name in eventData) && eventData[evt.data.name](evt.data.data);
+	return function (aData, aCallback, aName) {
+		if (aCallback) { eventData[aName] = aCallback; }
+		self.postMessage({name: aName, data: aData});
 	};
-	return function(data, callback, name){
-		name = (name || '') + (Date.now() + Math.random().toString(36));
-		callback && (eventData[name] = callback);
-		opera.extension.postMessage({name:name,data:data});
-	};
-})() : null;
+})();
 var XPathResult = window.XPathResult;
 var XMLHttpRequest = window.XMLHttpRequest;
 var Node = window.Node;
