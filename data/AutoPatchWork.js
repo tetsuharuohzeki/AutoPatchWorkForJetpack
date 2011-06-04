@@ -167,6 +167,7 @@ var location = window.location;
 			var onoff = document.createElement('button');
 			onoff.textContent = 'on/off';
 			onoff.onclick = toggle;
+/*
 			var option = document.createElement('button');
 			option.textContent = 'options';
 			option.onclick = function(){
@@ -177,9 +178,12 @@ var location = window.location;
 			maneger.onclick = function(){
 				sendRequest({manage:true});
 			};
+*/
 			bar.appendChild(onoff);
+/*
 			bar.appendChild(option);
 			bar.appendChild(maneger);
+*/
 			bar.onmouseover = null;
 		};
 		function toggle(){
