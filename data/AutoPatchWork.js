@@ -28,6 +28,7 @@ var location = window.location;
 		FORCE_TARGET_WINDOW:true,
 		DEFAULT_STATE:true,
 		TARGET_WINDOW_NAME:'_blank',
+		BAR_STATUS:true,
 		css:''
 	};
 	var status = {
@@ -54,6 +55,7 @@ var location = window.location;
 			options.BASE_REMAIN_HEIGHT = info.config.remain_height;
 			options.DEFAULT_STATE = info.config.auto_start;
 			options.FORCE_TARGET_WINDOW = info.config.target_blank;
+			options.BAR_STATUS = !(info.config.bar_status === 'off');
 			options.css = info.css;
 			debug = info.config.debug_mode;
 		}
@@ -160,43 +162,45 @@ var location = window.location;
 			bottom.appendChild(line);
 			document.body.appendChild(bottom);
 		}
-		bar  = document.createElement('div');
-		bar.id = 'AutoPatchWork-Bar';
-		bar.className = 'on';
-		bar.onmouseover = function(){
-			var onoff = document.createElement('button');
-			onoff.textContent = 'on/off';
-			onoff.onclick = toggle;
+		if (options.BAR_STATUS) {
+			bar  = document.createElement('div');
+			bar.id = 'AutoPatchWork-Bar';
+			bar.className = 'on';
+			bar.onmouseover = function(){
+				var onoff = document.createElement('button');
+				onoff.textContent = 'on/off';
+				onoff.onclick = _toggle;
 /*
-			var option = document.createElement('button');
-			option.textContent = 'options';
-			option.onclick = function(){
-				sendRequest({options:true});
-			};
-			var maneger = document.createElement('button');
-			maneger.textContent = 'siteinfo';
-			maneger.onclick = function(){
-				sendRequest({manage:true});
-			};
+				var option = document.createElement('button');
+				option.textContent = 'options';
+				option.onclick = function(){
+					sendRequest({options:true});
+				};
+				var maneger = document.createElement('button');
+				maneger.textContent = 'siteinfo';
+				maneger.onclick = function(){
+					sendRequest({manage:true});
+				};
 */
-			bar.appendChild(onoff);
+				bar.appendChild(onoff);
 /*
-			bar.appendChild(option);
-			bar.appendChild(maneger);
+				bar.appendChild(option);
+				bar.appendChild(maneger);
 */
-			bar.onmouseover = null;
-		};
-		function toggle(){
-			if (bar.className === 'on'){
-				bar.className = 'off';
-				state_off();
-			} else if(bar.className === 'off') {
-				bar.className = 'on';
-				state_on();
+				bar.onmouseover = null;
+			};
+			function _toggle(){
+				if (bar.className === 'on'){
+					bar.className = 'off';
+					state_off();
+				} else if(bar.className === 'off') {
+					bar.className = 'on';
+					state_on();
+				}
 			}
+			document.body.appendChild(bar);
+			bar.addEventListener('click', function(e){if(e.target === bar)_toggle();},false);
 		}
-		document.body.appendChild(bar);
-		bar.addEventListener('click', function(e){if(e.target === bar)toggle();},false);
 		var style = document.createElement('style');
 		style.textContent = options.css;
 		style.id = 'AutoPatchWork-style';
@@ -256,7 +260,7 @@ var location = window.location;
 		function terminated(evt){
 			status.state = false;
 			window.removeEventListener('scroll', check_scroll, false);
-			bar.className = 'terminated';
+			bar && (bar.className = 'terminated');
 			setTimeout(function(){
 				bar && bar.parentNode && bar.parentNode.removeChild(bar);
 				bar = null;
@@ -276,7 +280,7 @@ var location = window.location;
 			if (status.bottom && status.bottom.parentNode) {
 				status.bottom.parentNode.removeChild(status.bottom);
 			}
-			bar.className = 'error';
+			bar && (bar.className = 'error');
 			return false;
 		}
 		function dispatch_event(type,opt){
@@ -299,7 +303,7 @@ var location = window.location;
 			}
 		}
 		function check_scroll(){
-			if (bar){
+			/*if (bar){
 				if (scroll) {
 					//bar.style.top = (window.pageYOffset + window.innerHeight - 13) + 'px';
 				} else {
@@ -311,7 +315,7 @@ var location = window.location;
 						scroll = false;
 					}, 500);
 				}
-			}
+			}*/
 			if (loading) return;
 			var remain = Root.scrollHeight - window.innerHeight - window.pageYOffset;
 			if (status.state && remain < status.remain_height) {
@@ -345,11 +349,11 @@ var location = window.location;
 		}
 		function state_on(){
 			status.state = true;
-			bar.className = 'on';
+			bar && (bar.className = 'on');
 		}
 		function state_off(){
 			status.state = false;
-			bar.className = 'off';
+			bar && (bar.className = 'off');
 		}
 		function request(){
 			if(!loading){
@@ -416,7 +420,7 @@ var location = window.location;
 		}
 		function append(evt){
 			if (!status.loaded || !htmlDoc){
-				bar.className = 'loading';
+				bar && (bar.className = 'loading');
 				return;
 			}
 			status.loaded = false;
@@ -474,7 +478,7 @@ var location = window.location;
 				} else {
 					return dispatch_event('AutoPatchWork.error',{message:next_href + ' is already loaded.'});
 				}
-				bar.className = status.state ? 'on' : 'off';
+				bar && (bar.className = status.state ? 'on' : 'off');
 				setTimeout(function(){
 					dispatch_event('AutoPatchWork.request');
 				}, 1000);

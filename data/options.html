@@ -31,6 +31,11 @@
 		<label for="remain_height" class="MSG_remain_height">base remain height</label> <span class="outputs" id="remain_height_value"></span>
 	</div>
 	<div><input type="checkbox" id="debug_mode"><label for="debug_mode" class="MSG_debugmode">debug mode</label></div>
+	<div>
+		<h4 class="MSG_bottom_bar">status bar on page bottom</h4>
+		<p><input type="radio" name="bar_status" id="bar_on" value="on"><label for="bar_on" class="MSG_bar_on">ON</label>
+		<p><input type="radio" name="bar_status" id="bar_off" value="off"><label for="bar_off" class="MSG_bar_off">OFF</label>
+	</div>
 </section>
 <section id="filters" class="content">
 	<div class="MSG_exclude_filter">Exclude Filter by URL</div>
@@ -51,6 +56,10 @@
 </section>
 <section id="news" class="content">
 	<ul>
+	<li>
+		<h4>2011/02/09 23:20</h4>
+		<p>ページ下部のステータスバーの表示オプションを追加しました。スクロールが重く感じる場合、OFFにすると改善されるかもしれません。
+	</li>
 	<li>
 		<h4>2011/02/04 01:35</h4>
 		<p>SITEINFOに間違った正規表現があったときに処理が止まってしまうバグを修正しました。
@@ -239,6 +248,19 @@ update_siteinfo.addEventListener('click',function(e){
 	})
 },false);
 
+$X('//input[@type="radio"]').forEach(function(box){
+	var id = box.id;
+	var name = box.name;
+	var val = AutoPatchWork.config[name] || 'on';
+	if (val == box.value) {
+		box.checked = true;
+	} else {
+	}
+	box.addEventListener('click',function(){
+		AutoPatchWork.config[name] = box.value;
+		AutoPatchWork.update();
+	},false);
+});
 $X('/html/body/div/div/section/div/input[@type="checkbox"]').forEach(function(box){
 	var id = box.id;
 	var val = AutoPatchWork.config[id];
