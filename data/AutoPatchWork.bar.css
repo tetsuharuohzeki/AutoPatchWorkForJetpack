@@ -32,6 +32,8 @@
 	font-size:15px !important;
 }
 #AutoPatchWork-Bar.loading{
+	background-color:rgba(0, 128, 255, 0.75) !important;
+	-moz-transition:all 1s ease-in-out;
 	-webkit-animation-name: loading;
 	-webkit-animation-duration: 1s;
 	-webkit-animation-iteration-count:infinite;
@@ -98,6 +100,7 @@
 	display:inline-block;
 	background: #222;
 	background: -webkit-gradient(linear, left top, left bottom,from(#222),to(#666));
+	background: -moz-linear-gradient(top,#222,#666);
 	color:#fff;
 	height:22px;
 	border:1px solid #aaa;
