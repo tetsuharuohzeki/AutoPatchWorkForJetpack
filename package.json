@@ -1,7 +1,7 @@
 {
 	"name": "autopatchwork",
 	"fullName": "AutoPatchWork",
-	"version": "1.8.0.0",
+	"version": "1.9.1.0",
 	"description": "Automatically loads the next page and inserts into current page when you reach the end of the page. like AutoPagerize.",
 	"url": "",
 	"icon": "./data/icon/Icon-32.png"
