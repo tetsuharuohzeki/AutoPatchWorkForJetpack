@@ -150,7 +150,7 @@
 		if (debug) {
 			message('matched! ');
 		}
-		if (history.replaceState) {
+		if (history.replaceState && !/google/.test(location.host)) {
 			var _createHTML = createHTML;
 			createHTML = function createHTML_history() {
 				var current = location.href;
