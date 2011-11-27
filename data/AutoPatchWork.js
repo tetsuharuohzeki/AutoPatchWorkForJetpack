@@ -8,16 +8,14 @@
 		}, false);
 		return;
 	}
-	var sendRequest = (function(){
-		var eventData = {};
-		self.on("message", function (aRes) {
-			if (aRes.name in eventData) eventData[aRes.name](aRes.data);
-		});
-		return function (aData, aCallback, aName) {
-			if (aCallback) { eventData[aName] = aCallback; }
-			self.postMessage({name: aName, data: aData});
-		};
-	})();
+	var gEventData = {};
+	self.on("message", function (aRes) {
+		if (aRes.name in gEventData) gEventData[aRes.name](aRes.data);
+	});
+	var sendRequest = function (aData, aCallback, aName) {
+		if (aCallback) { gEventData[aName] = aCallback; }
+		self.postMessage({name: aName, data: aData});
+	};
 	var options = {
 		BASE_REMAIN_HEIGHT:400,
 		FORCE_TARGET_WINDOW:true,
