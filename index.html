@@ -171,13 +171,16 @@ g.safari && safari.application.addEventListener("message",function(evt){
 		if (evt.message.action === 'update'){
 			AutoPatchWork.config = evt.message.config;
 			AutoPatchWork.update();
+			Object.keys(AutoPatchWork.config).forEach(function(key) {
+				safari.extension.settings[key] = AutoPatchWork.config[key];
+			});
 		} else if (evt.message.action === 'save_disable_site') {
 			AutoPatchWork.disable_sites = evt.message.disable_sites;
 			AutoPatchWork.save_disable_site();
 		} else if (evt.message.action === 'UpdateSiteinfo') {
 			UpdateSiteinfo(function(){
 				evt.target.page.dispatchMessage('updated_siteinfo');
-			});
+			},null,true);
 		} else {
 			AutoPatchWork[evt.message.action].apply(AutoPatchWork, evt.message.args);
 		}
@@ -210,7 +213,7 @@ g.opera && (g.opera.extension.onmessage = function(evt){
 		} else if (message.action === 'UpdateSiteinfo') {
 			UpdateSiteinfo(function(){
 				evt.source.postMessage({name:'updated_siteinfo'});
-			});
+  		},null,true);
 		} else {
 			AutoPatchWork[message.action].apply(AutoPatchWork, message.args);
 		}
@@ -378,11 +381,13 @@ function init_barcss(){
 	xhr.send(null);
 	AutoPatchWork.barcss = xhr.responseText;
 }
-function UpdateSiteinfo(callback,error_back){
-	var url =  'http://ss-o.net/json/wedataAutoPagerizeSITEINFO.json';
+function UpdateSiteinfo(callback,error_back, force){
+	var sso = 'http://ss-o.net/json/wedataAutoPagerizeSITEINFO.json';
+	var wedata = 'http://wedata.net/databases/AutoPagerize/items.json';
+	var url = force ? wedata : sso;
 	var xhr = new XMLHttpRequest();
 	siteinfo = [];
-	xhr.onload = function(){
+	xhr.onload = function() {
 		var info;
 		try {
 			info = JSON.parse(xhr.responseText);
@@ -399,8 +404,10 @@ function UpdateSiteinfo(callback,error_back){
 			}
 		}
 	};
-	xhr.onerror = function(e){
-		if (typeof error_back === 'function'){
+	xhr.onerror = function(e) {
+		if (url === wedata) {
+			UpdateSiteinfo(callback, error_back, false);
+		} else if (typeof error_back === 'function'){
 			error_back(e);
 		}
 	};

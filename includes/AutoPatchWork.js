@@ -4,7 +4,7 @@
 		var args = arguments;
 		document.addEventListener('DOMContentLoaded', function(e) {
 			APW.loaded = true;
-			APW.apply(window, args);
+			APW.apply(g, args);
 		}, false);
 		return;
 	}
