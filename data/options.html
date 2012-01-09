@@ -261,7 +261,7 @@ update_siteinfo.addEventListener('click',function(e){
 		update_siteinfo.disabled = false;
 	},function(){
 		update_siteinfo_output.textContent = 'sorry, something wrong.';
-	})
+	}, true);
 },false);
 
 $X('//input[@type="radio"]').forEach(function(box){
