@@ -76,5 +76,25 @@
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>on</string>
+		<key>Key</key>
+		<string>bar_status</string>
+		<key>Title</key>
+		<string>show status bar on page bottom</string>
+		<key>Titles</key>
+		<array>
+			<string>ON</string>
+			<string>OFF</string>
+		</array>
+		<key>Type</key>
+		<string>RadioButtons</string>
+		<key>Values</key>
+		<array>
+			<string>on</string>
+			<string>off</string>
+		</array>
+	</dict>
 </array>
 </plist>
