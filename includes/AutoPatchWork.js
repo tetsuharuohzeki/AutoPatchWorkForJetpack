@@ -164,6 +164,12 @@
 				return doc;
 			};
 		}
+
+    if (window.chrome) {
+      window.addEventListener('AutoPatchWork.load.from.page', load_for_chrome, false);
+      window.addEventListener('AutoPatchWork.error.from.page', load_error_for_chrome, false);
+      request = request_for_chrome;
+    }
 		if ( (next.host && next.host !==location.host) || (next.protocol && next.protocol !==location.protocol) ) {
 			request = request_iframe;
 		}
@@ -199,6 +205,7 @@
 		loaded_urls[location.href] = true;
 		loaded_urls[next.href] = true;
 		status.remain_height || (status.remain_height = calc_remain_height());
+
 		window.addEventListener('scroll', check_scroll, false);
 		window.addEventListener('resize', check_scroll, false);
 		window.addEventListener('AutoPatchWork.request', request, false);
@@ -209,6 +216,7 @@
 		window.addEventListener('AutoPatchWork.state', state, false);
 		window.addEventListener('AutoPatchWork.terminated', terminated, false);
 		window.addEventListener('AutoPatchWork.toggle', toggle, false);
+
 		if (request === request_iframe) {
 			window.addEventListener('AutoPatchWork.pageloaded', function(){
 				var i = document.getElementById('AutoPatchWork-request-frame');
@@ -303,6 +311,11 @@
 			window.removeEventListener('AutoPatchWork.DOMNodeInserted', restore_setup, false);
 			window.removeEventListener('AutoPatchWork.state', state, false);
 			window.removeEventListener('beforeunload', savePosition, false);
+      if (window.chrome) {
+        window.removeEventListener('AutoPatchWork.load.from.page', load_for_chrome, false);
+        window.removeEventListener('AutoPatchWork.error.from.page', load_error_for_chrome, false);
+      }
+
 			if (status.bottom && status.bottom.parentNode) {
 				status.bottom.parentNode.removeChild(status.bottom);
 			}
@@ -344,21 +357,24 @@
 				status.bottom.parentNode.removeChild(status.bottom);
 			}
 		}
-		function log(m, d) {
+		function log(m, s) {
+      var d = s && JSON.stringify(s, null, 2);
+      var url = s && ('http://wedata.net/items/' + s["wedata.net.id"]);
 			if (window.opera) {
-				opera.postError([m, d]);
+				opera.postError([m, d, url]);
 			} else if (window.console) {
 				console.log(m, d);
+        console.log(url);
 			}
 		}
 		function message(message) {
 			if (debug) {
-				log(message, JSON.stringify(siteinfo,null,2));
+				log(message, siteinfo);
 			}
 			return false;
 		}
 		function error(message) {
-			if (debug) log(message, JSON.stringify(siteinfo,null,2));
+			if (debug) log(message, siteinfo);
 			status.state = false;
 			window.removeEventListener('scroll', check_scroll, false);
 			if (status.bottom && status.bottom.parentNode) {
@@ -396,7 +412,7 @@
 			}
 		}
 		function target_rewrite(evt) {
-			if (evt && evt.target) {
+			if (evt && evt.target && evt.target.getElementsByTagName) {
 				var as = evt.target.getElementsByTagName('a');
 				for (var i = 0, l = as.length;i < l;i++) {
 					var a = as[i], _a = a.getAttribute('href');
@@ -477,6 +493,39 @@
 			x.overrideMimeType('text/html; charset=' + document.characterSet);
 			x.send(null);
 		}
+    function request_for_chrome() {
+      if(!loading){
+        loading = true;
+      }
+      var url = state.nextURL = next.href || next.getAttribute('href') || next.action || next.value;
+      var s = document.createElement('script');
+      s.textContent = '(' + function(url){
+        var x = new XMLHttpRequest();
+        x.onload = function() {
+          dispatch_message_event('AutoPatchWork.load.from.page', {responseText: x.responseText, url: url});
+        };
+        x.onerror = function() {
+          dispatch_message_event('AutoPatchWork.error.from.page', {message: 'request failed. status:' + x.status});
+        };
+        x.open('GET', url, true);
+        x.overrideMimeType('text/html; charset=' + document.characterSet);
+        x.send(null);
+        function dispatch_message_event(name, data, o) {
+          o || (o = {});
+          var ev = document.createEvent('MessageEvent');
+          ev.initMessageEvent(name, o.canBubble||false, o.cancelable||false, data, o.origin||location.origin, o.id||Date.now(), o.source||window);
+          window.dispatchEvent(ev);
+        }
+      } + ')("'+url+'");';
+      document.head.appendChild(s);
+      document.head.removeChild(s);
+    }
+    function load_for_chrome(evt) {
+      dispatch_event('AutoPatchWork.load', {response:{responseText: evt.data.responseText}, url: evt.data.url});
+    }
+    function load_error_for_chrome(evt) {
+      dispatch_event('AutoPatchWork.error', {message: evt.data.message});
+    }
 		function request_iframe(){
 			if(!loading){
 				loading = true;
