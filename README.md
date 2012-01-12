@@ -1,13 +1,14 @@
 AutoPatchWork for JetPack
 ==========
 
-This is the fork of (http://code.google.com/p/autopatchwork/ "AutoPatchWork").
+This is the fork of AutoPatchWork ( http://code.google.com/p/autopatchwork/ ).
 It needs Add-on SDK if you build this project.
 
 Code Base
 -------
 
-This source code is based on (https://chrome.google.com/webstore/detail/aeolcjbaammbkgaiagooljfdepnjmkfd "AutoPatchWork for Google Chrome Extension").
+This source code is based on AutoPatchWork for Google Chrome Extension.
+( https://chrome.google.com/webstore/detail/aeolcjbaammbkgaiagooljfdepnjmkfd )
 
 License
 -------
